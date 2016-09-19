@@ -5,7 +5,7 @@ void ofApp::setup(){
 	sourceImage.load("source3.jpg");
 	sourceImagePixel = sourceImage.getPixels();
 	ofSetFrameRate(30);
-	sourceVideo.loadMovie("sourceMovie4.avi");
+	sourceVideo.loadMovie("barbarella.avi");
 	sourceVideo.play();
 	sourceVideo.setPaused(true);
 	stepFrame = 0;
@@ -15,6 +15,7 @@ void ofApp::setup(){
 void ofApp::update(){
 		sourceVideo.setFrame(stepFrame);
 		sourceVideo.update();
+		averageColorLine.clear();
 	/*int lineNumber = ofGetFrameNum() % int(sourceImage.getHeight());
 	if (lineNumber == sourceImage.getHeight() - 1) {
 		averageColorLine.clear();
@@ -28,7 +29,7 @@ void ofApp::update(){
 
 
 		}
-		
+		averageColorPicturesLines.push_back(averageColorLine);
 			int averageR = 0;
 			int averageG = 0;
 			int averageB = 0;
@@ -72,8 +73,14 @@ void ofApp::draw(){
 		//ofNoFill();
 		ofSetColor(int(averageColorPictures[i].r), int(averageColorPictures[i].g), int(averageColorPictures[i].b),255);
 		ofDrawLine(i, ofGetHeight() /2 , i, ofGetHeight());
-		ofSetColor(int(averageColorPicturesHsb[i].r), int(averageColorPicturesHsb[i].g), int(averageColorPicturesHsb[i].b), 255);
-		ofDrawLine(i, 0, i, ofGetHeight()/2);
+		for (int j = 0; j < sourceVideo.getHeight(); j++) {
+			//ofSetColor(int(averageColorPicturesLines[i][j].r), int(averageColorPicturesLines[i][j].g), int(averageColorPicturesLines[i][j].b), 255);
+			ofSetColor(averageColorPicturesLines[i][j]);
+			//ofLog() <<i<<":"<< int(averageColorPicturesLines[i].size()) << endl;
+			ofDrawLine(i, j, i, j+1);
+		}
+		//ofSetColor(int(averageColorPicturesHsb[i].r), int(averageColorPicturesHsb[i].g), int(averageColorPicturesHsb[i].b), 255);
+		
 		
 	}
 	ofSetColor(255, 255, 255);
