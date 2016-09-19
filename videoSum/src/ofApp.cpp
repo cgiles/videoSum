@@ -5,7 +5,7 @@ void ofApp::setup(){
 	sourceImage.load("source3.jpg");
 	sourceImagePixel = sourceImage.getPixels();
 	ofSetFrameRate(30);
-	sourceVideo.loadMovie("barbarella.avi");
+	sourceVideo.loadMovie("sourceMovie4.avi");
 	sourceVideo.play();
 	sourceVideo.setPaused(true);
 	stepFrame = 0;
@@ -22,7 +22,10 @@ void ofApp::update(){
 		sourceImagePixel = sourceVideo.getPixels();
 		for (int i=0; i < sourceVideo.getHeight();i++) {
 			ofColor tempColor = averageColorLineCalculator(sourceImagePixel, i, sourceImage.getWidth(), sourceImage.getHeight());
+			ofColor tempColorHSB = averageColorLineHSBCalculator(sourceImagePixel, i, sourceImage.getWidth(), sourceImage.getHeight());
 			averageColorLine.push_back(tempColor);
+			averageColorLineHsb.push_back(tempColorHSB);
+
 
 		}
 		
@@ -40,6 +43,22 @@ void ofApp::update(){
 			averageColorImage.b = averageB / averageColorLine.size();
 			averageColorImage.a = 255;
 			averageColorPictures.push_back(averageColorImage);
+			//------------------------------------------------------------------
+			
+			int averageRH = 0;
+			int averageGH = 0;
+			int averageBH = 0;
+
+			for (ofColor tC : averageColorLineHsb) {
+				averageRH += int(tC.r);
+				averageGH += int(tC.g);
+				averageBH += int(tC.b);
+			}
+			averageColorImage.r = averageRH / averageColorLine.size();
+			averageColorImage.g = averageGH / averageColorLine.size();
+			averageColorImage.b = averageBH / averageColorLine.size();
+			averageColorImage.a = 255;
+			averageColorPicturesHsb.push_back(averageColorImage);
 		
 			stepFrame += int(sourceVideo.getTotalNumFrames() / ofGetWidth());
 }
@@ -52,10 +71,14 @@ void ofApp::draw(){
 	for (int i = 0; i < averageColorPictures.size(); i++) {
 		//ofNoFill();
 		ofSetColor(int(averageColorPictures[i].r), int(averageColorPictures[i].g), int(averageColorPictures[i].b),255);
-		ofDrawLine(i, ofGetHeight() - 500 , i, ofGetHeight());
+		ofDrawLine(i, ofGetHeight() /2 , i, ofGetHeight());
+		ofSetColor(int(averageColorPicturesHsb[i].r), int(averageColorPicturesHsb[i].g), int(averageColorPicturesHsb[i].b), 255);
+		ofDrawLine(i, 0, i, ofGetHeight()/2);
+		
 	}
 	ofSetColor(255, 255, 255);
-	string feedBack =ofToString(sourceVideo.getCurrentFrame())+":"+ ofToString(sourceVideo.getTotalNumFrames())+":"+ofToString(ofGetFrameRate());
+	ofDrawLine(0, ofGetHeight() / 2, ofGetWidth(), ofGetHeight() / 2);
+	string feedBack =ofToString(sourceVideo.getCurrentFrame()/25)+":"+ ofToString(sourceVideo.getTotalNumFrames()/25)+":"+ofToString(ofGetFrameRate());
 	ofDrawBitmapString(feedBack, 10, 10);
 }
 
@@ -86,24 +109,25 @@ ofColor ofApp::averageColorLineCalculator(ofPixels sourcePixels, int nbLine, int
 //--------------------------------------------------------------
 ofColor ofApp::averageColorLineHSBCalculator(ofPixels sourcePixels, int nbLine, int widSource, int heiSource) {
 
-	int totalR = 0;
-	int totalG = 0;
-	int totalB = 0;
-
+	float totalH = 0;
+	float totalS = 0;
+	float totalB = 0;
+	float tempH = 0;
+	float tempS = 0;
+	float tempB = 0;
 	for (int i = 0; i < heiSource; i++) {
 		ofColor tempColor = sourceImagePixel.getColor(i, nbLine);
-		totalR += int(tempColor.r);
-		totalG += int(tempColor.g);
-		totalB += int(tempColor.b);
+		tempColor.getHsb(tempH, tempS, tempB);
+		totalH += tempH;
+		totalS += tempS;
+		totalB += tempB;
 	}
 
 	/* ofLog() <<"R : "<< amountR.size() <<":"<<totalR<<":"<<totalR/sourceImage.getWidth()<< endl;
 	ofLog() <<"G : "<< amountG.size() << ":" << totalG << ":" << totalG / sourceImage.getWidth() << endl;
 	ofLog() <<"B : "<< amountB.size() << ":" << totalB << ":" << totalB / sourceImage.getWidth() << endl; */
 	ofColor returnColor;
-	returnColor.r = totalR / sourceImage.getWidth();
-	returnColor.g = totalG / sourceImage.getWidth();
-	returnColor.b = totalB / sourceImage.getWidth();
+	returnColor.setHsb(totalH / sourceImage.getWidth(),totalS / sourceImage.getWidth(), totalB / sourceImage.getWidth());
 	returnColor.a = 255;
 	return returnColor;
 }

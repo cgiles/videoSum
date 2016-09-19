@@ -27,6 +27,8 @@ class ofApp : public ofBaseApp{
 		ofPixels sourceImagePixel;
 		vector<ofColor> averageColorLine;
 		vector<ofColor> averageColorPictures;
+		vector<ofColor> averageColorLineHsb;
+		vector<ofColor> averageColorPicturesHsb;
 		ofColor averageColorImage;
 		vector<int> amountR, amountG, amountB;
 		ofVideoPlayer sourceVideo;
