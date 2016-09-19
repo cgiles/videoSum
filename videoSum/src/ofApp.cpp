@@ -8,7 +8,7 @@ void ofApp::setup(){
 	sourceVideo.loadMovie("barbarella.avi");
 	sourceVideo.play();
 	sourceVideo.setPaused(true);
-	stepFrame = 0;
+	stepFrame = 0; 
 }
 
 //--------------------------------------------------------------
