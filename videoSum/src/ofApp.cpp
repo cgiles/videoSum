@@ -61,7 +61,7 @@ void ofApp::update(){
 			averageColorImage.a = 255;
 			averageColorPicturesHsb.push_back(averageColorImage);
 		
-			stepFrame += int(sourceVideo.getTotalNumFrames() / ofGetWidth());
+			stepFrame += int(ceil(sourceVideo.getTotalNumFrames() / ofGetWidth()));
 }
 
 //--------------------------------------------------------------
