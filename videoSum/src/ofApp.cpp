@@ -5,21 +5,48 @@ void ofApp::setup(){
 	sourceImage.load("source3.jpg");
 	sourceImagePixel = sourceImage.getPixels();
 	ofSetFrameRate(30);
-	sourceVideo.loadMovie("barbarella.avi");
+	sourceVideo.loadMovie("sourceMovie4.avi");
 	sourceVideo.play();
 	sourceVideo.setPaused(true); 
 	stepFrame = 0; 
+
+	shader.load("shader/shaderAverageColor");
+	monFbo.allocate(1/*ofGetWidth()*/, ofGetHeight());
+	posX = 0;
+	//ofBackground(0);
+	plane.mapTexCoords(0, 0, ofGetWidth(), ofGetHeight());
+	plane.set(sourceVideo.getWidth(), sourceVideo.getHeight(), 10, 10, OF_PRIMITIVE_TRIANGLES);
+	ofSetBackgroundAuto(false);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 		sourceVideo.setFrame(stepFrame);
 		sourceVideo.update();
-		averageColorLine.clear();
+		stepFrame += int(ceil(sourceVideo.getTotalNumFrames() / ofGetWidth()));
+		monFbo.begin();
+		ofClear(0, 0, 0);
+
+		sourceVideo.getTextureReference().bind();
+
+		shader.begin();
+
+
+		shader.setUniform1f("imgWidth", sourceVideo.getWidth());
+		ofPushMatrix();
+		ofTranslate(monFbo.getWidth() / 2, monFbo.getHeight() / 2);
+
+		plane.draw();
+		ofPopMatrix();
+		shader.end();
+		sourceVideo.getTextureReference().unbind();
+		
+		monFbo.end();
+		/*averageColorLine.clear();
 	/*int lineNumber = ofGetFrameNum() % int(sourceImage.getHeight());
 	if (lineNumber == sourceImage.getHeight() - 1) {
 		averageColorLine.clear();
-	}*/
+	}* /
 		sourceImagePixel = sourceVideo.getPixels();
 		for (int i=0; i < sourceVideo.getHeight();i++) {
 			ofColor tempColor = averageColorLineCalculator(sourceImagePixel, i, sourceImage.getWidth(), sourceImage.getHeight());
@@ -60,13 +87,15 @@ void ofApp::update(){
 			averageColorImage.b = averageBH / averageColorLine.size();
 			averageColorImage.a = 255;
 			averageColorPicturesHsb.push_back(averageColorImage);
-		
-			stepFrame += int(ceil(sourceVideo.getTotalNumFrames() / ofGetWidth()));
+		*/
+			
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	ofSetColor(255, 255, 255);
+	monFbo.draw(posX, 0);
+	if(posX<ofGetWidth())posX++;
+	/*ofSetColor(255, 255, 255);
 	//sourceImage.draw(0, 0);
 	//sourceVideo.draw(0, 0);
 	for (int i = 0; i < averageColorPictures.size(); i++) {
@@ -86,7 +115,7 @@ void ofApp::draw(){
 	ofSetColor(255, 255, 255);
 	ofDrawLine(0, ofGetHeight() / 2, ofGetWidth(), ofGetHeight() / 2);
 	string feedBack =ofToString(sourceVideo.getCurrentFrame()/25)+":"+ ofToString(sourceVideo.getTotalNumFrames()/25)+":"+ofToString(ofGetFrameRate());
-	ofDrawBitmapString(feedBack, 10, 10);
+	ofDrawBitmapString(feedBack, 10, 10);*/
 }
 
 //--------------------------------------------------------------

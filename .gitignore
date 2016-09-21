@@ -19,7 +19,10 @@ x64/
 x86/
 build/
 bld/
-[Bb]in/
+[Bb]in/*
+![Bb]in/data/
+[Bb]in/data/*
+![Bb]in/data/shader
 [Oo]bj/
 
 # Visual Studio 2015 cache/options directory

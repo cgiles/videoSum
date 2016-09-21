@@ -34,4 +34,10 @@ class ofApp : public ofBaseApp{
 		vector<int> amountR, amountG, amountB;
 		ofVideoPlayer sourceVideo;
 		int stepFrame;
+		
+		ofPlanePrimitive plane;
+		ofShader shader;
+		ofFbo monFbo;
+		int posX;
+
 };
